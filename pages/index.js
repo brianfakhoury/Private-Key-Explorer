@@ -81,6 +81,26 @@ export default function Home() {
           content="Tool for browsing private key mappings."
         />
         <link rel="icon" href="/favicon.ico" />
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary" key="twcard" />
+        <meta name="twitter:creator" content="brianfakhoury" key="twhandle" />
+
+        {/* Open Graph */}
+        <meta
+          property="og:image"
+          content="https://og-image.vercel.app/Private%20Key%20Explorer.png"
+          key="ogimage"
+        />
+        <meta
+          property="og:title"
+          content="Private Key Explorer"
+          key="ogtitle"
+        />
+        <meta
+          property="og:description"
+          content="Fun & simple tool for browsing private key to public ethereum address mappings."
+          key="ogdesc"
+        />
       </Head>
 
       <main className={styles.main}>
