@@ -101,8 +101,7 @@ export default function Home() {
           content="Fun & simple tool for browsing private key to public ethereum address mappings."
           key="ogdesc"
         />
-        <meta name="viewport" content= "width=device-width, user-scalable=no">
-
+        <meta name="viewport" content="width=device-width, user-scalable=no" />
       </Head>
 
       <main className={styles.main}>
