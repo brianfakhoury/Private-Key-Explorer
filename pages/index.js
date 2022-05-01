@@ -22,7 +22,11 @@ const HistoryTable = ({ history }) => (
         <tr key={i}>
           <td>{e[0]}</td>
           <td>
-            <a target="_blank" href={"https://etherscan.io/address/" + e[1]}>
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href={"https://etherscan.io/address/" + e[1]}
+            >
               {abbreviateAddress(e[1])}
             </a>
           </td>
@@ -132,6 +136,7 @@ export default function Home() {
           Ethereum Address:{" "}
           <a
             target="_blank"
+            rel="noreferrer"
             href={"https://etherscan.io/address/" + current_address}
           >
             {current_address}
@@ -145,7 +150,11 @@ export default function Home() {
       <footer className={styles.footer}>
         <p>
           built with 💪🏻 by{" "}
-          <a target="_blank" href="https://twitter.com/brianfakhoury">
+          <a
+            target="_blank"
+            rel="noreferrer"
+            href="https://twitter.com/brianfakhoury"
+          >
             @brianfakhoury
           </a>
         </p>
