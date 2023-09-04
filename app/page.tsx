@@ -1,15 +1,11 @@
-import Head from "next/head";
+"use client";
 import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
+
+import { abbreviateAddress, validateHex, validatePkLength } from "./utils";
+
 import styles from "../styles/Home.module.css";
-
-const abbreviateAddress = (address) =>
-  `${address.substring(0, 6)}...${address.substring(38)}`;
-
-const validateHex = (address) =>
-  new RegExp(/^(0x|0X)?[a-fA-F0-9]+$/g).test(address);
-
-const validatePkLength = (address) => address.length === 34;
+import "../styles/globals.css";
 
 const HistoryTable = ({ history }) => (
   <table className={styles.table}>
@@ -36,20 +32,17 @@ const HistoryTable = ({ history }) => (
   </table>
 );
 
-export default function Home() {
-  const [text, setText] = useState("0x00000000000000000000000000000001");
+export default function Page() {
+  const [text, setText] = useState(
+    "0x0000000000000000000000000000000000000000000000000000000000000001"
+  );
 
   const [history, setHistory] = useState([
     [
-      "0x00000000000000000000000000000001",
+      "0x0000000000000000000000000000000000000000000000000000000000000001",
       "0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf",
     ],
   ]);
-
-  const [validation, setValidation] = useState({
-    status: false,
-    reason: "n/a",
-  });
 
   const pushToHistory = (pk, address) =>
     !history.reduce(
@@ -59,12 +52,15 @@ export default function Home() {
 
   const pk2wallet = (pk) => {
     try {
-      if (pk.length < 34) {
+      if (pk.length < 66) {
         throw new Error("too short");
       }
-      const w = new ethers.Wallet(pk);
-      pushToHistory(pk, w.address);
-      return w.address;
+      const signer = new ethers.SigningKey(pk);
+      const public_key = signer.publicKey;
+      const keccak_hash = ethers.keccak256(ethers.dataSlice(public_key, 1))
+      const address = "0x" + keccak_hash.slice(-40);
+      pushToHistory(pk, address);
+      return address;
     } catch (e) {
       console.log(e);
     }
@@ -74,36 +70,6 @@ export default function Home() {
 
   return (
     <div className={styles.container}>
-      <Head>
-        <title>Private Key Explorer</title>
-        <meta
-          name="description"
-          content="Tool for browsing private key mappings."
-        />
-        <link rel="icon" href="/favicon.ico" />
-        {/* Twitter */}
-        <meta name="twitter:card" content="summary" key="twcard" />
-        <meta name="twitter:creator" content="brianfakhoury" key="twhandle" />
-
-        {/* Open Graph */}
-        <meta
-          property="og:image"
-          content="https://og-image.vercel.app/Private%20Key%20Explorer.png"
-          key="ogimage"
-        />
-        <meta
-          property="og:title"
-          content="Private Key Explorer"
-          key="ogtitle"
-        />
-        <meta
-          property="og:description"
-          content="Fun & simple tool for browsing private key to public ethereum address mappings."
-          key="ogdesc"
-        />
-        <meta name="viewport" content="width=device-width, user-scalable=no" />
-      </Head>
-
       <main className={styles.main}>
         <header className={styles.header}>
           <h1>Explore Private Keys 👨🏽‍💻🔎</h1>
@@ -111,41 +77,40 @@ export default function Home() {
 
         <div className={styles.input}>
           <h3>Enter Private Key String</h3>
-          <input
-            type="text"
+          <textarea
             onChange={(e) =>
               e.target.value.startsWith("0x")
                 ? setText(e.target.value)
                 : setText("0x" + e.target.value)
             }
-            maxLength="34"
+            maxLength={66}
             value={text}
-          ></input>
+          ></textarea>
           <br></br>
           <button
             onClick={() =>
-              setText("0x" + text.substring(2).repeat(32).substring(0, 32))
+              setText("0x" + text.substring(2).repeat(64).substring(0, 64))
             }
           >
             Repeat Sequence
           </button>
           <button
             onClick={() =>
-              setText("0x" + text.substring(2).padStart(32, text.charAt(2)))
+              setText("0x" + text.substring(2).padStart(64, text.charAt(2)))
             }
           >
             Pad Beginning
           </button>
           <button
             onClick={() =>
-              setText("0x" + text.substring(2).padEnd(32, text.slice(-1)))
+              setText("0x" + text.substring(2).padEnd(64, text.slice(-1)))
             }
           >
             Pad Ending
           </button>
           <h3>Validation</h3>
           <p style={{ color: validatePkLength(text) ? "green" : "red" }}>
-            Length: {text.length} / 34
+            Length: {text.length} / 66
           </p>
           <p style={{ color: validateHex(text) ? "green" : "red" }}>
             Hex: {validateHex(text).toString()}
@@ -166,6 +131,33 @@ export default function Home() {
 
         <h2>History</h2>
         <HistoryTable history={history} />
+
+        <hr></hr>
+
+        <p className={styles.desc}>
+          An Ethereum private key is a 256-bit number represented in hexadecimal
+          format. It serves as a digital identity that enables you to sign
+          transactions and securely manage your Ethereum assets. Without this
+          key, you cannot access or make transactions within your Ethereum
+          wallet. Structure of Ethereum Private Keys In Ethereum, a private key
+          is a random string of 32 bytes (64 characters when represented in
+          hexadecimal). It is crucial that this number is generated securely and
+          remains confidential. Mathematically, an Ethereum private key must be
+          greater than zero and smaller than the secp256k1 curve order (n),
+          which is approximately 1.158 * 10^77.
+        </p>
+
+        <p className={styles.desc}>
+          Understanding the structure and constraints of Ethereum private keys
+          can provide valuable insights into the Ethereum protocol, enhance
+          security measures, and facilitate advanced features such as
+          multi-signature wallets and smart contract interactions. Note: Always
+          exercise caution and make sure to not expose any private keys that are
+          linked to a wallet with funds. This site is an experimental app and
+          should be used for educational purposes only. You can learn more <a href="https://ethereum.org/en/developers/docs/accounts.">here</a>.
+
+        </p>
+
       </main>
 
       <footer className={styles.footer}>

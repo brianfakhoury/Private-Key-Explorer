@@ -11,12 +11,13 @@
 }
 
 .header {
-  box-shadow:0 0px 10px 1px rgba(0,0,0,0.2) ;
-  border-radius: 20px;
   padding: 5px 25px;
   width: 100%;
   text-align: center;
-  margin-bottom: 40px;
+}
+
+.desc {
+  max-width: 500px;
 }
 
 .footer {
@@ -83,7 +84,6 @@
 
 
 .input {
-  margin: 1rem;
   padding: 1rem;
   text-align: left;
   color: inherit;
@@ -91,7 +91,6 @@
   border: 1px solid #eaeaea;
   border-radius: 10px;
   transition: color 0.15s ease, border-color 0.15s ease;
-  
 }
 
 .input:hover,
@@ -110,8 +109,9 @@
   font-size: 1rem;
 }
 
-.input input {
-  width: 280px;
+.input textarea {
+  width: 100%;
+  resize: none;
 }
 
 .input button {
