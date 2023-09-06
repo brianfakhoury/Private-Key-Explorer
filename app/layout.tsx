@@ -1,6 +1,6 @@
 export const metadata = {
   title: 'Explore Private Keys',
-  description: 'Built by Brian Fakhoury',
+  description: 'This tool is for playing around with the mapping of private keys to Ethereum addresses.',
   keywords: ['ethereum', 'cryptography', 'private keys'],
 }
 
