@@ -1,6 +1,7 @@
 export const metadata = {
   title: 'Explore Private Keys',
   description: 'Built by Brian Fakhoury',
+  keywords: ['ethereum', 'cryptography', 'private keys'],
 }
 
 export default function RootLayout({

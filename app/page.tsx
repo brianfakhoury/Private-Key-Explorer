@@ -168,7 +168,7 @@ export default function Page() {
             that are linked to a wallet with funds. This site is an experimental
             app and should be used for educational purposes only. You can learn
             more{" "}
-            <a href="https://ethereum.org/en/developers/docs/accounts.">here</a>
+            <a href="https://ethereum.org/en/developers/docs/accounts">here</a>
             .
           </p>
         </div>
