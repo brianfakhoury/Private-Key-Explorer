@@ -2,7 +2,13 @@
 import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
 
-import { abbreviateAddress, validateHex, validatePkLength } from "./utils";
+import {
+  abbreviateAddress,
+  validateHex,
+  validatePkLength,
+  validatePkOrder,
+  validatePkNotZero,
+} from "./utils";
 
 import styles from "../styles/Home.module.css";
 import "../styles/globals.css";
@@ -57,7 +63,7 @@ export default function Page() {
       }
       const signer = new ethers.SigningKey(pk);
       const public_key = signer.publicKey;
-      const keccak_hash = ethers.keccak256(ethers.dataSlice(public_key, 1))
+      const keccak_hash = ethers.keccak256(ethers.dataSlice(public_key, 1));
       const address = "0x" + keccak_hash.slice(-40);
       pushToHistory(pk, address);
       return address;
@@ -71,93 +77,101 @@ export default function Page() {
   return (
     <div className={styles.container}>
       <main className={styles.main}>
-        <header className={styles.header}>
-          <h1>Explore Private Keys 👨🏽‍💻🔎</h1>
-        </header>
+        <div className={styles.div1}>
+          <header className={styles.header}>
+            <h1>Explore Private Keys 👨🏽‍💻🔎</h1>
+          </header>
 
-        <div className={styles.input}>
-          <h3>Enter Private Key String</h3>
-          <textarea
-            onChange={(e) =>
-              e.target.value.startsWith("0x")
-                ? setText(e.target.value)
-                : setText("0x" + e.target.value)
-            }
-            maxLength={66}
-            value={text}
-          ></textarea>
-          <br></br>
-          <button
-            onClick={() =>
-              setText("0x" + text.substring(2).repeat(64).substring(0, 64))
-            }
-          >
-            Repeat Sequence
-          </button>
-          <button
-            onClick={() =>
-              setText("0x" + text.substring(2).padStart(64, text.charAt(2)))
-            }
-          >
-            Pad Beginning
-          </button>
-          <button
-            onClick={() =>
-              setText("0x" + text.substring(2).padEnd(64, text.slice(-1)))
-            }
-          >
-            Pad Ending
-          </button>
-          <h3>Validation</h3>
-          <p style={{ color: validatePkLength(text) ? "green" : "red" }}>
-            Length: {text.length} / 66
-          </p>
-          <p style={{ color: validateHex(text) ? "green" : "red" }}>
-            Hex: {validateHex(text).toString()}
-          </p>
+          <div className={styles.input}>
+            <h3>Enter Private Key String</h3>
+            <textarea
+              onChange={(e) =>
+                e.target.value.startsWith("0x")
+                  ? setText(e.target.value)
+                  : setText("0x")
+              }
+              maxLength={66}
+              value={text}
+            ></textarea>
+            <br></br>
+            <button
+              onClick={() =>
+                setText("0x" + text.substring(2).repeat(64).substring(0, 64))
+              }
+            >
+              Repeat Sequence
+            </button>
+            <button
+              onClick={() =>
+                setText("0x" + text.substring(2).padStart(64, text.charAt(2)))
+              }
+            >
+              Pad Beginning
+            </button>
+            <button
+              onClick={() =>
+                setText("0x" + text.substring(2).padEnd(64, text.slice(-1)))
+              }
+            >
+              Pad Ending
+            </button>
+            <h3>Validation</h3>
+            <p style={{ color: validatePkLength(text) ? "green" : "red" }}>
+              Length: {text.length-2} / 64
+            </p>
+            <p style={{ color: validateHex(text) ? "green" : "red" }}>
+              Hex: {validateHex(text).toString()}
+            </p>
+            <p style={{ color: validatePkOrder(text) ? "green" : "red" }}>
+              Below max order: {validatePkOrder(text).toString()}
+            </p>
+            <p style={{ color: validatePkNotZero(text) ? "green" : "red" }}>
+              Non-zero: {validatePkNotZero(text).toString()}
+            </p>
+          </div>
+
+          <h2>Output</h2>
+          <div className={styles.code}>
+            Ethereum Address:{" "}
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href={"https://etherscan.io/address/" + current_address}
+            >
+              {current_address}
+            </a>
+          </div>
+
+          <h2>History</h2>
+          <HistoryTable history={history} />
         </div>
 
-        <h2>Output</h2>
-        <div className={styles.code}>
-          Ethereum Address:{" "}
-          <a
-            target="_blank"
-            rel="noreferrer"
-            href={"https://etherscan.io/address/" + current_address}
-          >
-            {current_address}
-          </a>
+        <div className={styles.div2}>
+          <p className={styles.desc}>
+            An Ethereum private key is a 256-bit number usually represented in
+            hexadecimal format (32 bytes or 64 characters when represented in
+            hexadecimal). It serves as a digital identity that enables you to
+            sign transactions and securely manage your Ethereum assets. Without
+            this key, you cannot access or make transactions within your
+            Ethereum wallet. It is crucial that this number is generated
+            securely and remains confidential. Mathematically, an Ethereum
+            private key must be greater than zero and smaller than the secp256k1
+            curve order (n), which is approximately 1.158 * 10^77.
+          </p>
+
+          <p className={styles.desc}>
+            Understanding the structure and constraints of Ethereum private keys
+            can provide valuable insights into the Ethereum protocol, enhance
+            security measures, and facilitate advanced features such as
+            multi-signature wallets and smart contract interactions. Note:
+            Always exercise caution and make sure to not expose any private keys
+            that are linked to a wallet with funds. This site is an experimental
+            app and should be used for educational purposes only. You can learn
+            more{" "}
+            <a href="https://ethereum.org/en/developers/docs/accounts.">here</a>
+            .
+          </p>
         </div>
-
-        <h2>History</h2>
-        <HistoryTable history={history} />
-
-        <hr></hr>
-
-        <p className={styles.desc}>
-          An Ethereum private key is a 256-bit number represented in hexadecimal
-          format. It serves as a digital identity that enables you to sign
-          transactions and securely manage your Ethereum assets. Without this
-          key, you cannot access or make transactions within your Ethereum
-          wallet. Structure of Ethereum Private Keys In Ethereum, a private key
-          is a random string of 32 bytes (64 characters when represented in
-          hexadecimal). It is crucial that this number is generated securely and
-          remains confidential. Mathematically, an Ethereum private key must be
-          greater than zero and smaller than the secp256k1 curve order (n),
-          which is approximately 1.158 * 10^77.
-        </p>
-
-        <p className={styles.desc}>
-          Understanding the structure and constraints of Ethereum private keys
-          can provide valuable insights into the Ethereum protocol, enhance
-          security measures, and facilitate advanced features such as
-          multi-signature wallets and smart contract interactions. Note: Always
-          exercise caution and make sure to not expose any private keys that are
-          linked to a wallet with funds. This site is an experimental app and
-          should be used for educational purposes only. You can learn more <a href="https://ethereum.org/en/developers/docs/accounts.">here</a>.
-
-        </p>
-
       </main>
 
       <footer className={styles.footer}>
